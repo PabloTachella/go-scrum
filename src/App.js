@@ -1,7 +1,5 @@
 import './App.css';
+import { Login } from './components/Login/Login';
 
-export const App = () => {
-  return (
-    <h1>Go Scrum</h1>
-  );
-}
+export const App = () => <Login />
+
