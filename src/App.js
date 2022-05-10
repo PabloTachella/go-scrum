@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 
 import { Login } from './components/views/Login/Login';
 import { Register } from './components/views/Register/Register';
@@ -13,16 +14,60 @@ const RequireAuth = ({ children }) => {
   return children
 }
 
-export const App = () =>
-  <Routes>
-    <Route path="/"
-      element={
-        <RequireAuth>
-          <Tasks />
-        </RequireAuth>
-      } 
-    />
-    <Route path="/register" element={<Register />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="*" element={<Error404 />} />
-  </Routes>
+const pageTransition = {
+  in: {
+    opacity: 1,
+  },
+  out: {
+    opacity: 0,
+  },
+}
+
+export const App = () => {
+
+  const location = useLocation()
+
+  return (
+    <AnimatePresence>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/"
+          element={
+            <motion.div
+              className="page"
+              initial="out"
+              animate="in"
+              exit="out"
+              variants={pageTransition}
+            >
+              <RequireAuth>
+                <Tasks />
+              </RequireAuth>
+            </motion.div>
+          } />
+        <Route path="/login" element={
+          <motion.div
+            className="page"
+            initial="out"
+            animate="in"
+            exit="out"
+            variants={pageTransition}
+          >
+            <Login />
+          </motion.div>
+
+        } />
+        <Route path="*" element={
+          <motion.div
+            className="page"
+            initial="out"
+            animate="in"
+            exit="out"
+            variants={pageTransition}
+          >
+            <Error404 />
+          </motion.div>
+        } />
+      </Routes>
+    </AnimatePresence>
+  )
+}
