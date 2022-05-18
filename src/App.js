@@ -1,11 +1,13 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { Login } from './components/views/Login/Login';
 import { Register } from './components/views/Register/Register';
 import { Tasks } from './components/views/Tasks/Tasks';
-import { Error404 } from './components/views/Error404/Error404';
 import './App.css';
+
+const Error404 = lazy(() => import("./components/views/Error404/Error404"))
 
 const RequireAuth = ({ children }) => {
   if (!localStorage.getItem("logged")) {
@@ -64,7 +66,9 @@ export const App = () => {
             exit="out"
             variants={pageTransition}
           >
-            <Error404 />
+            <Suspense fallback={<>...</>}>
+              <Error404 />
+            </Suspense>
           </motion.div>
         } />
       </Routes>
