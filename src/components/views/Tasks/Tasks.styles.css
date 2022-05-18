@@ -1,6 +1,13 @@
-.wrapper_list {
+.list_container {
   padding: 15px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+
+.list_wrapper {
+  display: flex;
+}
+
+.list {
+  width: 200px;
 }
