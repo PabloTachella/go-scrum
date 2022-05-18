@@ -1,0 +1,35 @@
+.auth {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth>form {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.auth>form>div {
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.auth>form>div *:not(label) {
+  padding: 8px;
+}
+
+@media screen and (min-width: 600px) {
+  .auth>form {
+    max-width: 550px;
+    background-color: #fafafa;
+    border: 1px solid #999;
+  }
+}
