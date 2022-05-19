@@ -17,5 +17,5 @@ export const useResize = (limit = 900) => {
     return () => window.removeEventListener("resize", handleResize)
   })
 
-  return isMinor
+  return { isPhone: isMinor }
 }
