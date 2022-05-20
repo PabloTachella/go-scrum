@@ -6,6 +6,7 @@ import { limitString } from "../../../Helpers";
 import { cardsData } from "./data";
 
 import "./Tasks.styles.css";
+import { TaskForm } from "../../TaskForm/TaskForm";
 
 export const Tasks = () => {
 
@@ -19,6 +20,7 @@ export const Tasks = () => {
     <>
       <Header />
       <main id="tasks">
+        <TaskForm />
         <section className="list_container">
           <div className="list_header">
             <h2>Mis Tareas</h2>
