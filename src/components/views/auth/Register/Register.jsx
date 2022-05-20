@@ -1,9 +1,20 @@
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import "../Auth.styles.css";
 
 export const Register = () => {
+
+  const [data, setData] = useState()
+
+  useEffect(() => {
+    fetch("https://goscrum-api.alkemy.org/auth/data")
+      .then((response) => response.json())
+      .then((data) => setData(data.result))
+  }, [])
+
+  console.log({ data })
 
   const initialValues = {
     userName: "",
@@ -99,8 +110,11 @@ export const Register = () => {
             onBlur={handleBlur}
           >
             <option value="">Seleccionar Rol...</option>
-            <option value="Team Member">Team Member</option>
-            <option value="Team Leader">Team Leader</option>
+            {data?.Rol?.map((option) => (
+              <option value={option} key={option}>
+                {option}
+              </option>
+            ))}
           </select>
           {errors.role && touched.role && (
             <span className="error-message">{errors.role}</span>
@@ -117,34 +131,38 @@ export const Register = () => {
             onBlur={handleBlur}
           >
             <option value="">Seleccionar Continente...</option>
-            <option value="America">America</option>
-            <option value="Europa">Europa</option>
-            <option value="Otro">Otro</option>
+            {data?.continente?.map((option) => (
+              <option value={option} key={option}>
+                {option}
+              </option>
+            ))}
           </select>
           {errors.continent && touched.continent && (
             <span className="error-message">{errors.continent}</span>
           )}
         </div>
-
-        <div>
-          <label>Región</label>
-          <select
-            name="region"
-            onChange={handleChange}
-            value={values.region}
-            className={errors.region && touched.region ? "error" : ""}
-            onBlur={handleBlur}
-          >
-            <option value="">Seleccionar Región...</option>
-            <option value="Latam">Latam</option>
-            <option value="Brasil">Brasil</option>
-            <option value="America del Norte">America del Norte</option>
-            <option value="Otro">Otro</option>
-          </select>
-          {errors.region && touched.region && (
-            <span className="error-message">{errors.region}</span>
-          )}
-        </div>
+        {values.continent === "America" && (
+          <div>
+            <label>Región</label>
+            <select
+              name="region"
+              onChange={handleChange}
+              value={values.region}
+              className={errors.region && touched.region ? "error" : ""}
+              onBlur={handleBlur}
+            >
+              <option value="">Seleccionar Región...</option>
+              {data?.region?.map((option) => (
+                <option value={option} key={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors.region && touched.region && (
+              <span className="error-message">{errors.region}</span>
+            )}
+          </div>
+        )}
 
         <div>
           <button type="submit">Enviar</button>
