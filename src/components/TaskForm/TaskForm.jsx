@@ -26,7 +26,7 @@ export const TaskForm = () => {
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit })
 
-  const { handleChange, handleSubmit, errors } = formik
+  const { handleChange, handleSubmit, errors, touched, handleBlur } = formik
 
   return (
     <section className="task-form">
@@ -35,26 +35,48 @@ export const TaskForm = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <div>
-            <input name="title" onChange={handleChange} placeholder="Título" />
-            {errors.title && <div>{errors.title}</div>}
+            <input
+              name="title"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Título"
+              className={errors.title && touched.title ? "error" : ""}
+            />
+            {errors.title && touched.title && (
+              <span className="error-message">{errors.title}</span>
+            )}
           </div>
           <div>
-            <select name="status" onChange={handleChange}>
+            <select
+              name="status"
+              className={errors.status && touched.status ? "error" : ""}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            >
               <option value="">Seleccionar un estado</option>
               <option value="new">nueva</option>
               <option value="inProgress">en proceso</option>
               <option value="finished">teminada</option>
             </select>
-            {errors.status && <div>{errors.status}</div>}
+            {errors.status && touched.status && (
+              <span className="error-message">{errors.status}</span>
+            )}
           </div>
           <div>
-            <select name="priority" onChange={handleChange}>
+            <select
+              name="priority"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className={errors.priority && touched.priority ? "error" : ""}
+            >
               <option value="">Seleccionar una prioridad</option>
               <option value="low">baja</option>
               <option value="medium">media</option>
               <option value="high">alta</option>
             </select>
-            {errors.priority && <div>{errors.priority}</div>}
+            {errors.priority && touched.priority && (
+              <span className="error-message">{errors.priority}</span>
+            )}
           </div>
         </div>
         <div>

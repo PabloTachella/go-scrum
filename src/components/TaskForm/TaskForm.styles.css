@@ -23,6 +23,15 @@
   margin-bottom: 0.6rem;
 }
 
+.error {
+  border: solid 1px red;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+}
+
 @media (min-width: 1300px) {
   .task-form > form > div {
      flex-direction: row;
