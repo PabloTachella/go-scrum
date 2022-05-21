@@ -1,19 +1,58 @@
+import { useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import { Header } from "../../Header/Header";
 import { Card } from "../../Card/Card";
 
 import { useResize } from "../../../Hooks/useResize";
 import { limitString } from "../../../Helpers";
-import { cardsData } from "./data";
 
 import "./Tasks.styles.css";
 import { TaskForm } from "../../TaskForm/TaskForm";
 
-export const Tasks = () => {
+const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
 
+export const Tasks = () => {
+  const [list, setList] = useState(null)
+  const [ loading, setLoading ] = useState(false)
   const { isPhone } = useResize(900)
 
+  useEffect(() => {
+    setLoading(true)
+    fetch(`${API_ENDPOINT}task`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setList(data.result)
+        setLoading(false)
+      })
+  }, [])
+
   const renderAllCards = () => {
-    return cardsData.map((data) => <Card key={data.id} data={data} />);
+    return list?.map((data) => <Card key={data._id} data={data} />)
+  }
+
+  const renderNewCards = () => {
+    return list
+      ?.filter((data) => data.status === "NEW")
+      .map((data) => <Card key={data._id} data={data} />)
+  }
+
+  const renderInProgressCards = () => {
+    return list
+      ?.filter((data) => data.status === "IN PROGRESS")
+      .map((data) => <Card key={data._id} data={data} />)
+  }
+
+  const renderFinishedCars = () => {
+    return list
+      ?.filter((data) => data.status === "FINISHED")
+      .map((data) => <Card key={data._id} data={data} />)
   }
 
   return (
@@ -25,52 +64,33 @@ export const Tasks = () => {
           <div className="list_header">
             <h2>Mis Tareas</h2>
           </div>
-          {isPhone ?
-            (<div className="list phone">{renderAllCards()}</div>) :
-            (<div className="list_wrapper">
-              <div className="list">
-                <h4>Nuevas</h4>
-                <div className="card">
-                  <div className="close">x</div>
-                  <h3>Tarea 1</h3>
-                  <h6>18/05/2022 15:30 hs.</h6>
-                  <h5>Pablo Tachella</h5>
-                  <button type="button">Nueva</button>
-                  <button type="button">Alta</button>
-                  <p>{
-                    limitString(`Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic porro, odit sequi 
-                  debitis inventore minima, ipsam explicabo ullam quaerat, deserunt quam ab. Dolor 
-                  blanditiis eum molestiae magni, reprehenderit dolorem ex!`, 170).string
-                  }</p>
-                </div>
+          {isPhone ? (
+            !list?.length ? (<div>No hay tareas creadas</div>)
+              : loading ? (<Skeleton />)
+                : (<div className="list phone">{renderAllCards()}</div>)
+          ) :
+            (
+              <div className="list_wrapper">
+                {!list?.length ? (<div>No hay tareas creadas</div>)
+                  : loading ? (<Skeleton />)
+                    : (
+                      <>
+                        <div className="list">
+                          <h3>Nuevas</h3>
+                          {renderNewCards()}
+                        </div>
+                        <div className="list">
+                          <h3>En progreso</h3>
+                          {renderInProgressCards()}
+                        </div>
+                        <div className="list">
+                          <h3>Finalizadas</h3>
+                          {renderFinishedCars()}
+                        </div>
+                      </>
+                    )}
               </div>
-
-              <div className="list">
-                <h4>En proceso</h4>
-                <div className="card">
-                  <div className="close">x</div>
-                  <h3>Tarea 1</h3>
-                  <h6>18/05/2022 15:30 hs.</h6>
-                  <h5>Pablo Tachella</h5>
-                  <button type="button">Nueva</button>
-                  <button type="button">Alta</button>
-                  <p>Descripción fake</p>
-                </div>
-              </div>
-
-              <div className="list">
-                <h4>Finalizadas</h4>
-                <div className="card">
-                  <div className="close">x</div>
-                  <h3>Tarea 1</h3>
-                  <h6>18/05/2022 15:30 hs.</h6>
-                  <h5>Pablo Tachella</h5>
-                  <button type="button">Nueva</button>
-                  <button type="button">Alta</button>
-                  <p>Descripción fake</p>
-                </div>
-              </div>
-            </div>)
+            )
           }
         </section>
       </main>
