@@ -2,18 +2,32 @@ import "./TaskForm.styles.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
+const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
+
 export const TaskForm = () => {
   const initialValues = {
     title: "",
     status: "",
-    priority: "",
+    importance: "",
     description: "",
   }
 
-  const required = "Este campo es requerido";
+  const required = "*Este campo es requerido";
 
   const onSubmit = () => {
-    alert("Formulario creado")
+    fetch(`${API_ENDPOINT}task`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+      body: JSON.stringify({ task: values }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        resetForm()
+        alert("La tarea fue creada")
+      })
   }
 
   const validationSchema = Yup.object().shape({
@@ -21,12 +35,13 @@ export const TaskForm = () => {
       .min(6, "Ingrese un mínimo de 6 caracteres")
       .required(required),
     status: Yup.string().required(required),
-    priority: Yup.string().required(required),
+    importance: Yup.string().required(required),
+    description: Yup.string().required(required),
   })
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit })
 
-  const { handleChange, handleSubmit, errors, touched, handleBlur } = formik
+  const { handleChange, handleSubmit, errors, touched, handleBlur, values, resetForm } = formik
 
   return (
     <section className="task-form">
@@ -37,6 +52,7 @@ export const TaskForm = () => {
           <div>
             <input
               name="title"
+              value={values.title}
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Título"
@@ -49,14 +65,15 @@ export const TaskForm = () => {
           <div>
             <select
               name="status"
+              value={values.status}
               className={errors.status && touched.status ? "error" : ""}
               onChange={handleChange}
               onBlur={handleBlur}
             >
               <option value="">Seleccionar un estado</option>
-              <option value="new">nueva</option>
-              <option value="inProgress">en proceso</option>
-              <option value="finished">teminada</option>
+              <option value="NEW">Nueva</option>
+              <option value="IN PROGRESS">En proceso</option>
+              <option value="FINISHED">Teminada</option>
             </select>
             {errors.status && touched.status && (
               <span className="error-message">{errors.status}</span>
@@ -64,27 +81,34 @@ export const TaskForm = () => {
           </div>
           <div>
             <select
-              name="priority"
+              name="importance"
+              value={values.importance}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.priority && touched.priority ? "error" : ""}
+              className={errors.importance && touched.importance ? "error" : ""}
             >
               <option value="">Seleccionar una prioridad</option>
-              <option value="low">baja</option>
-              <option value="medium">media</option>
-              <option value="high">alta</option>
+              <option value="LOW">Baja</option>
+              <option value="MEDIUM">Media</option>
+              <option value="HIGH">Alta</option>
             </select>
-            {errors.priority && touched.priority && (
-              <span className="error-message">{errors.priority}</span>
+            {errors.importance && touched.importance && (
+              <span className="error-message">{errors.importance}</span>
             )}
           </div>
         </div>
         <div>
           <textarea
             name="description"
+            value={values.description}
             onChange={handleChange}
+            onBlur={handleBlur}
             placeholder="Descripción"
+            className={errors.description && touched.description ? "error" : ""}
           />
+          {errors.description && touched.description && (
+            <span className="error-message">{errors.description}</span>
+          )}
         </div>
         <div></div>
         <button type="submit">Crear</button>
