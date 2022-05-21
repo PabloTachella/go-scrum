@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { Radio, RadioGroup, FormControl, FormControlLabel } from "@mui/material";
 
 import { Header } from "../../Header/Header";
 import { Card } from "../../Card/Card";
@@ -15,12 +16,14 @@ const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
 
 export const Tasks = () => {
   const [list, setList] = useState(null)
-  const [ loading, setLoading ] = useState(false)
+  const [renderList, setRenderList] = useState(null)
+  const [tasksfromWho, setTasksfromWho] = useState("ALL")
+  const [loading, setLoading] = useState(false)
   const { isPhone } = useResize(900)
 
   useEffect(() => {
     setLoading(true)
-    fetch(`${API_ENDPOINT}task`, {
+    fetch(`${API_ENDPOINT}task${tasksfromWho === "ME" ? "/me" : ""}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -29,30 +32,39 @@ export const Tasks = () => {
       .then((response) => response.json())
       .then((data) => {
         setList(data.result)
+        setRenderList(data.result)
         setLoading(false)
       })
-  }, [])
+  }, [tasksfromWho])
 
   const renderAllCards = () => {
-    return list?.map((data) => <Card key={data._id} data={data} />)
+    return renderList?.map((data) => <Card key={data._id} data={data} />)
   }
 
   const renderNewCards = () => {
-    return list
+    return renderList
       ?.filter((data) => data.status === "NEW")
       .map((data) => <Card key={data._id} data={data} />)
   }
 
   const renderInProgressCards = () => {
-    return list
+    return renderList
       ?.filter((data) => data.status === "IN PROGRESS")
       .map((data) => <Card key={data._id} data={data} />)
   }
 
   const renderFinishedCars = () => {
-    return list
+    return renderList
       ?.filter((data) => data.status === "FINISHED")
       .map((data) => <Card key={data._id} data={data} />)
+  }
+
+  const handleChangeImportance = (event) => {
+    if (event.currentTarget.value === "ALL") setRenderList(list)
+    else
+      setRenderList(
+        list.filter((data) => data.importance === event.currentTarget.value)
+      )
   }
 
   return (
@@ -64,14 +76,41 @@ export const Tasks = () => {
           <div className="list_header">
             <h2>Mis Tareas</h2>
           </div>
+          <div className="filters">
+            <FormControl>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                onChange={(event) => setTasksfromWho(event.currentTarget.value)}
+              >
+                <FormControlLabel
+                  value="ALL"
+                  control={<Radio />}
+                  label="Todas"
+                />
+                <FormControlLabel
+                  value="ME"
+                  control={<Radio />}
+                  label="Mis tareas"
+                />
+              </RadioGroup>
+            </FormControl>
+            <select name="importance" onChange={handleChangeImportance}>
+              <option value="">Seleccionar una prioridad</option>
+              <option value="ALL">Todas</option>
+              <option value="LOW">Baja</option>
+              <option value="MEDIUM">Media</option>
+              <option value="HIGH">Alta</option>
+            </select>
+          </div>
           {isPhone ? (
-            !list?.length ? (<div>No hay tareas creadas</div>)
+            !renderList?.length ? (<div>No hay tareas creadas</div>)
               : loading ? (<Skeleton />)
                 : (<div className="list phone">{renderAllCards()}</div>)
           ) :
             (
               <div className="list_wrapper">
-                {!list?.length ? (<div>No hay tareas creadas</div>)
+                {!renderList?.length ? (<div>No hay tareas creadas</div>)
                   : loading ? (<Skeleton />)
                     : (
                       <>

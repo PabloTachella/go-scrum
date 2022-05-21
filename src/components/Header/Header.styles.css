@@ -12,3 +12,7 @@ header > img {
 header > div {
   cursor: pointer;
 }
+
+.wrapper_right_header {
+  display: flex;
+}

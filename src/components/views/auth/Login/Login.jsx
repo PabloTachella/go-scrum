@@ -15,7 +15,7 @@ export const Login = () => {
     password: ''
   }
 
-  const required = "* Campo obligatorio"
+  const required = "*Campo obligatorio"
 
   const validationSchema = () =>
     Yup.object().shape({
@@ -41,6 +41,7 @@ export const Login = () => {
       .then((data) => {
         if (data.status_code === 200) {
           localStorage.setItem("token", data?.result?.token)
+          localStorage.setItem("userName", data?.result?.user.userName)
           navigate("/", { replace: true })
         } else {
           swal();

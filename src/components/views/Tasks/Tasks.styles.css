@@ -15,3 +15,9 @@
 .list {
   width: 200px;
 }
+
+@media (max-width: 900px) {
+  #tasks {
+     flex-direction: column;
+  }
+}
