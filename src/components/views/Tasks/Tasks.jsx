@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Radio, RadioGroup, FormControl, FormControlLabel } from "@mui/material";
+import debounce from "lodash.debounce";
 
 import { Header } from "../../Header/Header";
 import { Card } from "../../Card/Card";
@@ -19,6 +20,7 @@ export const Tasks = () => {
   const [renderList, setRenderList] = useState(null)
   const [tasksfromWho, setTasksfromWho] = useState("ALL")
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState("")
   const { isPhone } = useResize(900)
 
   useEffect(() => {
@@ -37,27 +39,25 @@ export const Tasks = () => {
       })
   }, [tasksfromWho])
 
+  useEffect(() => {
+    if (search)
+      setRenderList(list.filter((data) => data.title.startsWith(search)))
+    else setRenderList(list)
+  }, [search])
+
   const renderAllCards = () => {
     return renderList?.map((data) => <Card key={data._id} data={data} />)
   }
 
-  const renderNewCards = () => {
+  const renderColumnCards = (text) => {
     return renderList
-      ?.filter((data) => data.status === "NEW")
+      ?.filter((data) => data.status === text)
       .map((data) => <Card key={data._id} data={data} />)
   }
 
-  const renderInProgressCards = () => {
-    return renderList
-      ?.filter((data) => data.status === "IN PROGRESS")
-      .map((data) => <Card key={data._id} data={data} />)
-  }
-
-  const renderFinishedCars = () => {
-    return renderList
-      ?.filter((data) => data.status === "FINISHED")
-      .map((data) => <Card key={data._id} data={data} />)
-  }
+  const handleSearch = debounce((event) => {
+    setSearch(event?.target?.value)
+  }, 1000)
 
   const handleChangeImportance = (event) => {
     if (event.currentTarget.value === "ALL") setRenderList(list)
@@ -95,6 +95,13 @@ export const Tasks = () => {
                 />
               </RadioGroup>
             </FormControl>
+            <div className="search">
+              <input
+                type="text"
+                placeholder="Buscar por título..."
+                onChange={handleSearch}
+              />
+            </div>
             <select name="importance" onChange={handleChangeImportance}>
               <option value="">Seleccionar una prioridad</option>
               <option value="ALL">Todas</option>
@@ -116,15 +123,15 @@ export const Tasks = () => {
                       <>
                         <div className="list">
                           <h3>Nuevas</h3>
-                          {renderNewCards()}
+                          {renderColumnCards("NEW")}
                         </div>
                         <div className="list">
                           <h3>En progreso</h3>
-                          {renderInProgressCards()}
+                          {renderColumnCards("IN PROGRESS")}
                         </div>
                         <div className="list">
                           <h3>Finalizadas</h3>
-                          {renderFinishedCars()}
+                          {renderColumnCards("FINISHED")}
                         </div>
                       </>
                     )}
