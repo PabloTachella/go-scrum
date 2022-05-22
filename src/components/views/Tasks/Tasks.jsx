@@ -8,7 +8,6 @@ import { Header } from "../../Header/Header";
 import { Card } from "../../Card/Card";
 
 import { useResize } from "../../../Hooks/useResize";
-import { limitString } from "../../../Helpers";
 
 import "./Tasks.styles.css";
 import { TaskForm } from "../../TaskForm/TaskForm";
