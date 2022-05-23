@@ -1,10 +1,11 @@
-import "./TaskForm.styles.css";
 import { useFormik } from "formik";
+import { useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
 import * as Yup from "yup";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
-const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
+import { postTask } from "../../store/actions/tasksActions";
+
+import "./TaskForm.styles.css";
 
 export const TaskForm = () => {
   const initialValues = {
@@ -14,23 +15,11 @@ export const TaskForm = () => {
     description: "",
   }
 
+  const dispatch = useDispatch()
+
   const required = "*Campo obligatorio";
 
-  const onSubmit = () => {
-    fetch(`${API_ENDPOINT}task`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-      body: JSON.stringify({ task: values }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        resetForm()
-        toast("Tu tarea fue creada")
-      })
-  }
+  const onSubmit = () => dispatch(postTask({ values, resetForm }))
 
   const validationSchema = Yup.object().shape({
     title: Yup.string()
