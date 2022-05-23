@@ -2,7 +2,8 @@ import { useState } from "react";
 import { limitString } from "../../Helpers";
 
 export const Card = ({
-  data: { title, createdAt, user: { userName }, description, status, importance }
+  deleteCard,
+  data: { _id, title, createdAt, user: { userName }, description, status, importance }
 }) => {
   const [showMore, setShowMore] = useState(false);
 
@@ -10,7 +11,7 @@ export const Card = ({
 
   return (
     <div className="card">
-      <div className="close">x</div>
+      <div className="close" onClick={() => deleteCard(_id)}>x</div>
       <h3>{title}</h3>
       <h6>{datetime}</h6>
       <h5>{userName}</h5>

@@ -10,7 +10,7 @@ import { Card } from "../../Card/Card";
 import { TaskForm } from "../../TaskForm/TaskForm";
 
 import { useResize } from "../../../Hooks/useResize";
-import { getTasks, deleteTask, editTaskStatus, } from "../../../store/actions/tasksActions";
+import { getTasks, deleteTask, editTaskStatus } from "../../../store/actions/tasksActions";
 
 import "./Tasks.styles.css";
 
@@ -43,14 +43,18 @@ export const Tasks = () => {
     else setRenderList(list)
   }, [search])
 
+  const handleDelete = (id) => {
+    dispatch(deleteTask(id));
+  }
+
   const renderAllCards = () => {
-    return renderList?.map((data) => <Card key={data._id} data={data} />)
+    return renderList?.map((data) => <Card key={data._id} data={data} deleteCard={handleDelete}/>)
   }
 
   const renderColumnCards = (text) => {
     return renderList
       ?.filter((data) => data.status === text)
-      .map((data) => <Card key={data._id} data={data} />)
+      .map((data) => <Card key={data._id} data={data} deleteCard={handleDelete}/>)
   }
 
   const handleSearch = debounce((event) => {
