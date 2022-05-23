@@ -20,6 +20,11 @@ export const Header = () => {
     <header>
       <img src="/img/logo.png" alt="Logo" />
       <div className="wrapper_right_header">
+        <div>
+          <button onClick={() => navigate("/donate", { replace: true })}>
+            Donar
+          </button>
+        </div>
         <div className="black">Tareas creadas: {tasks?.length}</div>
         <div className="black">{localStorage.getItem("userName")}</div>
         <div onClick={handleLogout}>x</div>
