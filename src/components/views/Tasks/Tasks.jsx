@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Radio, RadioGroup, FormControl, FormControlLabel } from "@mui/material";
@@ -6,37 +7,35 @@ import debounce from "lodash.debounce";
 
 import { Header } from "../../Header/Header";
 import { Card } from "../../Card/Card";
-
-import { useResize } from "../../../Hooks/useResize";
-
-import "./Tasks.styles.css";
 import { TaskForm } from "../../TaskForm/TaskForm";
 
-const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
+import { useResize } from "../../../Hooks/useResize";
+import { getTasks, deleteTask, editTaskStatus, } from "../../../store/actions/tasksActions";
+
+import "./Tasks.styles.css";
 
 export const Tasks = () => {
   const [list, setList] = useState(null)
   const [renderList, setRenderList] = useState(null)
   const [tasksfromWho, setTasksfromWho] = useState("ALL")
-  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState("")
   const { isPhone } = useResize(900)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    setLoading(true)
-    fetch(`${API_ENDPOINT}task${tasksfromWho === "ME" ? "/me" : ""}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setList(data.result)
-        setRenderList(data.result)
-        setLoading(false)
-      })
-  }, [tasksfromWho])
+    dispatch(getTasks(tasksfromWho === "ME" ? "me" : ""))
+  }, [tasksfromWho, dispatch])
+
+  const { tasks, error, loading } = useSelector((state) => {
+    return state.tasksReducer
+  })
+
+  useEffect(() => {
+    if (tasks?.length) {
+      setList(tasks)
+      setRenderList(tasks)
+    }
+  }, [tasks])
 
   useEffect(() => {
     if (search)
@@ -65,6 +64,8 @@ export const Tasks = () => {
         list.filter((data) => data.importance === event.currentTarget.value)
       )
   }
+
+  if (error) return <div>Hay un error</div>
 
   return (
     <>
