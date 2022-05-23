@@ -3,7 +3,9 @@ import { limitString } from "../../Helpers";
 
 export const Card = ({
   deleteCard,
-  data: { _id, title, createdAt, user: { userName }, description, status, importance }
+  editCardStatus,
+  data: { _id, title, createdAt, user: { userName }, description, status, importance },
+  data
 }) => {
   const [showMore, setShowMore] = useState(false);
 
@@ -15,7 +17,7 @@ export const Card = ({
       <h3>{title}</h3>
       <h6>{datetime}</h6>
       <h5>{userName}</h5>
-      <button className={status.toLowerCase()} type="button">
+      <button className={status.toLowerCase()} type="button" onClick={() => editCardStatus(data)}>
         {status.toLowerCase()}
       </button>
       <button className={importance.toLowerCase()} type="button">

@@ -43,18 +43,32 @@ export const Tasks = () => {
     else setRenderList(list)
   }, [search])
 
-  const handleDelete = (id) => {
-    dispatch(deleteTask(id));
-  }
+  const handleDelete = id => dispatch(deleteTask(id))
+
+  const handleEditCardStatus = data => dispatch(editTaskStatus(data))
 
   const renderAllCards = () => {
-    return renderList?.map((data) => <Card key={data._id} data={data} deleteCard={handleDelete}/>)
+    return renderList?.map((data) =>
+      <Card
+        key={data._id}
+        data={data}
+        deleteCard={handleDelete}
+        editCardStatus={handleEditCardStatus}
+      />
+    )
   }
 
   const renderColumnCards = (text) => {
     return renderList
       ?.filter((data) => data.status === text)
-      .map((data) => <Card key={data._id} data={data} deleteCard={handleDelete}/>)
+      .map((data) =>
+        <Card
+          key={data._id}
+          data={data}
+          deleteCard={handleDelete}
+          editCardStatus={handleEditCardStatus}
+        />
+      )
   }
 
   const handleSearch = debounce((event) => {
