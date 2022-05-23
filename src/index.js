@@ -9,7 +9,7 @@ import './index.css';
 
 render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename='goscrum/'>
       <Provider store={store}>
         <App />
       </Provider>
